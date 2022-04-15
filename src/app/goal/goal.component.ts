@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Goal } from '../goal';
+import { Quote } from '../quote-class/quote';
 import { GoalService } from '../goal-service/goal.service';
 import { AlertService } from '../alert-service/alert.service';
+import { QuoteRequestService } from '../quote-http/quote-request.service';
 
 @Component({
   selector: 'app-goal',
@@ -11,6 +14,7 @@ import { AlertService } from '../alert-service/alert.service';
 export class GoalComponent implements OnInit {
   goals: Goal[];
   alertService: AlertService;
+  quote!: Quote;
 
   toggleDetails(index: any) {
     this.goals[index].showDescription = !this.goals[index].showDescription;
@@ -27,8 +31,8 @@ export class GoalComponent implements OnInit {
       );
 
       if (toDelete) {
-         this.goals.splice(index, 1);
-         this.alertService.alertMe('The goal has been deleted');
+        this.goals.splice(index, 1);
+        this.alertService.alertMe('The goal has been deleted');
       }
     }
   }
@@ -38,10 +42,17 @@ export class GoalComponent implements OnInit {
     goal.completeDate = new Date(goal.completeDate);
     this.goals.push(goal);
   }
-  constructor(goalService: GoalService, alertService: AlertService) {
+  constructor(
+    goalService: GoalService,
+    alertService: AlertService,
+    private quoteService: QuoteRequestService
+  ) {
     this.goals = goalService.getGoals();
     this.alertService = alertService;
   }
 
-  ngOnInit(): void {}
-}
+  ngOnInit() {
+
+    this.quoteService.quoteRequest()
+    this.quote = this.quoteService.quote
+  }}
